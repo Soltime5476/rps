@@ -6,56 +6,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rock Paper Scissors</title>
   </head>
-  <script>
+  <body>
+    <button id="Rock">Rock</button>
+    <button id="Paper">Paper</button>
+    <button id="Scissors">Scissors</button>
+    <div id="announce">
+      <p id="game-result"></p>
+      <p id="game-score"></p>
+    </div>
+    <p></p>
+  </body>
+  <script defer>
     function getComputerChoice() {
-      const r = Math.random()
+      const r = Math.random();
       if (r <= 1 / 3) {
-        return "rock"
+        return "rock";
+      } else if (r <= 2 / 3) {
+        return "paper";
       }
-      else if (r <= 2 / 3) {
-        return "paper"
-      }
-      return "scissors"
+      return "scissors";
     }
 
-    function getHumanChoice() {
-      const choice = prompt("Enter your choice:").toLowerCase()
-      const valid = ["rock", "paper", "scissors"]
-      if (valid.includes(choice)) {
-        return choice
-      }
-      alert("Invalid choice!")
-    }
-    
     function playGame() {
-      let humanScore = 0
-      let computerScore = 0
+      let humanScore = 0;
+      let computerScore = 0;
+
+      function announce(result, element) {
+        element.textContent = result;
+      }
 
       function playRound(humanChoice, computerChoice) {
-        let result = `You chose ${humanChoice}, Computer chose ${computerChoice}`
+        humanChoice = humanChoice.toLowerCase();
+        computerChoice = computerChoice.toLowerCase();
+        let result = `You chose ${humanChoice}, Computer chose ${computerChoice}`;
         if (
-          (humanChoice == "rock" && computerChoice == "scissors") 
-          || (humanChoice == "paper" && computerChoice == "rock") 
-          || (humanChoice == "scissors" && computerChoice == "paper")
+          (humanChoice == "rock" && computerChoice == "scissors") ||
+          (humanChoice == "paper" && computerChoice == "rock") ||
+          (humanChoice == "scissors" && computerChoice == "paper")
         ) {
-          humanScore += 1
-          result += ", You win!"
+          humanScore += 1;
+          result += ", You win!";
+        } else if (humanChoice === computerChoice) {
+          result += ", it is a draw.";
+        } else {
+          computerScore += 1;
+          result += ", You lose.";
         }
-        else {
-          computerScore += 1
-          result += ", You lose."
-        }
-        alert(result)
+        console.log(humanScore, computerScore);
+        const display = document.querySelector("div#announce > p#game-result");
+        announce(result, display);
       }
 
-      for (let i = 0; i < 5; i++) {
-        const humanSelection = getHumanChoice();
-        const computerSelection = getComputerChoice();
-        playRound(humanSelection, computerSelection)
-      }
-
-      alert(`Human score: ${humanScore} Computer Score: ${computerScore}`)
+      const listener = (e) => {
+        const computerChoice = getComputerChoice();
+        playRound(e.target.textContent, computerChoice);
+        if (humanScore >= 5 || computerScore >= 5) {
+          winner = humanScore >= 5 ? "Human" : "Computer";
+          const scoreBoard = document.querySelector(
+            "div#announce > p#game-score"
+          );
+          announce(
+            `Game has ended. Human score: ${humanScore}, Computer score: ${computerScore}, ${winner} wins!`,
+            scoreBoard
+          );
+        }
+      };
+      const rockButton = document.querySelector("button#Rock");
+      const paperButton = document.querySelector("button#Paper");
+      const scissorsButton = document.querySelector("button#Scissors");
+      rockButton.addEventListener("click", listener);
+      paperButton.addEventListener("click", listener);
+      scissorsButton.addEventListener("click", listener);
     }
-    playGame()
+    playGame();
   </script>
 </html>
